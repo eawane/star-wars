@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "star-wars-navigation",
+    "slug": "snack-509e547f-c1c5-4fb1-9476-e18eab470e2a",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "description": "Three screens: Planets, Films, and Spaceships. Bottom tabs on iOS and drawer navigation on Android."
+  }
+}
