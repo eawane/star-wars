@@ -7,7 +7,11 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  TextInput,
+  TouchableOpacity,
+  Modal,
 } from 'react-native';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -24,7 +28,18 @@ function Screen({ route }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // Search state
+  const [searchText, setSearchText] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [submittedText, setSubmittedText] = useState('');
+
   const type = route.name;
+
+  // Display search text in modal
+  const handleSearch = () => {
+    setSubmittedText(searchText);
+    setModalVisible(true);
+  };
 
   useEffect(() => {
     let active = true;
@@ -75,9 +90,15 @@ function Screen({ route }) {
       return (
         <View style={styles.card}>
           <Text style={styles.title}>{item.name}</Text>
-          <Text style={styles.info}>Climate: {item.climate}</Text>
-          <Text style={styles.info}>Terrain: {item.terrain}</Text>
-          <Text style={styles.info}>Population: {item.population}</Text>
+          <Text style={styles.info}>
+            Climate: {item.climate}
+          </Text>
+          <Text style={styles.info}>
+            Terrain: {item.terrain}
+          </Text>
+          <Text style={styles.info}>
+            Population: {item.population}
+          </Text>
         </View>
       );
     }
@@ -102,7 +123,9 @@ function Screen({ route }) {
     return (
       <View style={styles.card}>
         <Text style={styles.title}>{item.name}</Text>
-        <Text style={styles.info}>Model: {item.model}</Text>
+        <Text style={styles.info}>
+          Model: {item.model}
+        </Text>
         <Text style={styles.info}>
           Manufacturer: {item.manufacturer}
         </Text>
@@ -117,8 +140,63 @@ function Screen({ route }) {
     <View style={styles.screen}>
       <Text style={styles.heading}>{type}</Text>
 
+      {/* Search input */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Enter search term"
+          placeholderTextColor="#777777"
+          value={searchText}
+          onChangeText={setSearchText}
+          onSubmitEditing={handleSearch}
+          returnKeyType="search"
+        />
+
+        <TouchableOpacity
+          style={styles.searchButton}
+          onPress={handleSearch}
+        >
+          <Text style={styles.searchButtonText}>
+            Search
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Search modal */}
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
+              Search Term
+            </Text>
+
+            <Text style={styles.modalText}>
+              You entered: {submittedText}
+            </Text>
+
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>
+                Close
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Star Wars data */}
       {loading ? (
-        <ActivityIndicator size="large" color="#ffe81f" />
+        <ActivityIndicator
+          size="large"
+          color="#ffe81f"
+        />
       ) : error ? (
         <Text style={styles.error}>{error}</Text>
       ) : (
@@ -127,8 +205,11 @@ function Screen({ route }) {
           renderItem={renderItem}
           keyExtractor={(item) => item.url}
           contentContainerStyle={styles.list}
+          keyboardShouldPersistTaps="handled"
           ListEmptyComponent={
-            <Text style={styles.info}>No results found.</Text>
+            <Text style={styles.info}>
+              No results found.
+            </Text>
           }
         />
       )}
@@ -140,9 +221,18 @@ function AppNavigation() {
   if (Platform.OS === 'android') {
     return (
       <Drawer.Navigator initialRouteName="Planets">
-        <Drawer.Screen name="Planets" component={Screen} />
-        <Drawer.Screen name="Films" component={Screen} />
-        <Drawer.Screen name="Spaceships" component={Screen} />
+        <Drawer.Screen
+          name="Planets"
+          component={Screen}
+        />
+        <Drawer.Screen
+          name="Films"
+          component={Screen}
+        />
+        <Drawer.Screen
+          name="Spaceships"
+          component={Screen}
+        />
       </Drawer.Navigator>
     );
   }
@@ -157,9 +247,18 @@ function AppNavigation() {
         ),
       }}
     >
-      <Tab.Screen name="Planets" component={Screen} />
-      <Tab.Screen name="Films" component={Screen} />
-      <Tab.Screen name="Spaceships" component={Screen} />
+      <Tab.Screen
+        name="Planets"
+        component={Screen}
+      />
+      <Tab.Screen
+        name="Films"
+        component={Screen}
+      />
+      <Tab.Screen
+        name="Spaceships"
+        component={Screen}
+      />
     </Tab.Navigator>
   );
 }
@@ -216,5 +315,70 @@ const styles = StyleSheet.create({
     color: '#ff7777',
     textAlign: 'center',
     marginTop: 20,
+  },
+
+  // Search styles
+  searchContainer: {
+    flexDirection: 'row',
+    marginBottom: 15,
+  },
+  searchInput: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    color: '#000000',
+    padding: 10,
+    borderRadius: 8,
+    marginRight: 8,
+    fontSize: 16,
+  },
+  searchButton: {
+    backgroundColor: '#ffe81f',
+    padding: 12,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchButtonText: {
+    color: '#000000',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#202b36',
+    padding: 25,
+    borderRadius: 12,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#ffe81f',
+    marginBottom: 15,
+  },
+  modalText: {
+    fontSize: 18,
+    color: '#ffffff',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  closeButton: {
+    backgroundColor: '#ffe81f',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+  },
+  closeButtonText: {
+    color: '#000000',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
